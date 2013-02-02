@@ -99,7 +99,7 @@ class ElasticSearch(object):
     This object is thread-safe. You can create one instance and share it
     among all threads.
     """
-    def __init__(self, urls, timeout=60, max_retries=0, revival_delay=300):
+    def __init__(self, urls, timeout=60, max_retries=0, revival_delay=300, auth=None):
         """
         :arg urls: A URL or iterable of URLs of ES nodes. These are full URLs
             with port numbers, like ``http://elasticsearch.example.com:9200``.
@@ -109,6 +109,7 @@ class ElasticSearch(object):
             request times out or a connection fails
         :arg revival_delay: Number of seconds for which to avoid a server after
             it times out or is uncontactable
+        :arg auth: Optional HTTP Basic Auth tuple like ``('user', 'pass')``.
         """
         if isinstance(urls, basestring):
             urls = [urls]
@@ -120,6 +121,9 @@ class ElasticSearch(object):
         self.max_retries = max_retries
         self.logger = getLogger('pyelasticsearch')
         self.session = requests.session()
+
+        if auth:
+            self.session.auth = auth
 
         json_converter = self.from_python
 
